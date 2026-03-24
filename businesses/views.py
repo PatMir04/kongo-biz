@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg
 from django.core.paginator import Paginator
 from django.contrib import messages
-from .models import Business, Category, BusinessPhoto
+from .models import Business, Category, BusinessPhoto, Province
 from .forms import BusinessForm, BusinessPhotoForm
 from reviews.models import Review
 from reviews.models import BusinessFlag
@@ -25,7 +25,7 @@ def home_view(request):
 def business_list(request):
     businesses = Business.objects.filter(is_active=True)
     query = request.GET.get('q', '')
-    city = request.GET.get('ville', '')
+    province_id = request.GET.get('province', '')
     category_slug = request.GET.get('categorie', '')
 
     if query:
@@ -34,8 +34,8 @@ def business_list(request):
             Q(description__icontains=query) |
             Q(address__icontains=query)
         )
-    if city:
-        businesses = businesses.filter(city=city)
+    if province_id:
+        businesses = businesses.filter(province_id=province_id)
     if category_slug:
         businesses = businesses.filter(category__slug=category_slug)
 
@@ -46,9 +46,10 @@ def business_list(request):
     context = {
         'businesses': businesses,
         'query': query,
-        'city': city,
+        'province_id': province_id,
         'category_slug': category_slug,
         'categories': Category.objects.all(),
+        'provinces': Province.objects.all(),
     }
     return render(request, 'businesses/list.html', context)
 
@@ -168,7 +169,7 @@ def flag_business(request, slug):
 
 def search_view(request):
     query = request.GET.get('q', '')
-    location = request.GET.get('location', '')
+    province_id = request.GET.get('province', '')
     results = Business.objects.filter(is_active=True)
 
     if query:
@@ -177,12 +178,8 @@ def search_view(request):
             Q(description__icontains=query) |
             Q(category__name__icontains=query)
         )
-    if location:
-        results = results.filter(
-            Q(city__icontains=location) |
-            Q(commune__icontains=location) |
-            Q(address__icontains=location)
-        )
+    if province_id:
+        results = results.filter(province_id=province_id)
 
     paginator = Paginator(results, 12)
     page = request.GET.get('page')
@@ -191,6 +188,7 @@ def search_view(request):
     context = {
         'results': results,
         'query': query,
-        'location': location,
+        'province_id': province_id,
+        'provinces': Province.objects.all(),
     }
     return render(request, 'businesses/search_results.html', context)
