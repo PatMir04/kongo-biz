@@ -51,19 +51,19 @@ class Business(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='businesses')
     name = models.CharField(max_length=200, verbose_name='Nom')
     slug = models.SlugField(max_length=200, unique=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='businesses')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='businesses', verbose_name='Categorie')
     description = models.TextField(verbose_name='Description', blank=True)
     address = models.CharField(max_length=300, verbose_name='Adresse')
     city = models.CharField(max_length=50, choices=CITY_CHOICES, verbose_name='Ville')
     commune = models.CharField(max_length=100, blank=True, verbose_name='Commune')
     phone = models.CharField(max_length=20, blank=True, verbose_name='Telephone')
     whatsapp = models.CharField(max_length=20, blank=True, verbose_name='WhatsApp')
-    email = models.EmailField(blank=True)
+    email = models.EmailField(blank=True, verbose_name='Email')
     website = models.URLField(blank=True, verbose_name='Site web')
     image = models.ImageField(upload_to='businesses/', blank=True, null=True, verbose_name='Photo principale')
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    opening_hours = models.TextField(blank=True, verbose_name='Heures d\'ouverture')
+    opening_hours = models.TextField(blank=True, verbose_name="Heures d'ouverture")
     is_verified = models.BooleanField(default=False, verbose_name='Verifie')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -104,3 +104,41 @@ class Business(models.Model):
     @property
     def city_display(self):
         return dict(self.CITY_CHOICES).get(self.city, self.city)
+
+    @property
+    def photo_count(self):
+        return self.photos.count()
+
+    def can_add_photo(self):
+        """Check if owner can add more photos based on subscription"""
+        from accounts.models import UserSubscription
+        try:
+            sub = self.owner.subscription
+            max_photos = sub.plan.max_photos_per_business
+        except (UserSubscription.DoesNotExist, AttributeError):
+            max_photos = 3  # Free tier default
+        return self.photo_count < max_photos
+
+    def max_photos_allowed(self):
+        from accounts.models import UserSubscription
+        try:
+            sub = self.owner.subscription
+            return sub.plan.max_photos_per_business
+        except (UserSubscription.DoesNotExist, AttributeError):
+            return 3
+
+
+class BusinessPhoto(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='businesses/photos/')
+    caption = models.CharField(max_length=200, blank=True, verbose_name='Legende')
+    is_primary = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-is_primary', '-uploaded_at']
+        verbose_name = 'Photo'
+        verbose_name_plural = 'Photos'
+
+    def __str__(self):
+        return f'Photo de {self.business.name}'
