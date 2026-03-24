@@ -35,3 +35,21 @@ class BusinessSearchForm(forms.Form):
             'class': 'form-control form-control-lg',
         })
     )
+
+
+class BusinessPhotoForm(forms.Form):
+    image = forms.ImageField(
+        label='Photo',
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
+    )
+    caption = forms.CharField(
+        max_length=200,
+        required=False,
+        label='Legende',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description de la photo'})
+    )
+    is_primary = forms.BooleanField(
+        required=False,
+        label='Photo principale',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
