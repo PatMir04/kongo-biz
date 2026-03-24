@@ -26,7 +26,7 @@
       <div class="card-header"><h5>Informations</h5></div>
       <div class="card-body">
         <p><i class="bi bi-geo-alt"></i> {{ business.address }}</p>
-        <p><i class="bi bi-building"></i> {{ business.city }}{% if business.commune %}, {{ business.commune }}{% endif %}</p>
+        <p><i class="bi bi-building"></i> {{ business.location_display }}</p>
         {% if business.phone %}
         <p><i class="bi bi-telephone"></i> {{ business.phone }}</p>
         {% endif %}
@@ -59,11 +59,11 @@
       <strong>{{ review.user.username }}</strong>
       <span>
         {% for i in "12345" %}
-          {% if forloop.counter <= review.rating %}
-            <i class="bi bi-star-fill text-warning"></i>
-          {% else %}
-            <i class="bi bi-star text-warning"></i>
-          {% endif %}
+        {% if forloop.counter <= review.rating %}
+        <i class="bi bi-star-fill text-warning"></i>
+        {% else %}
+        <i class="bi bi-star text-warning"></i>
+        {% endif %}
         {% endfor %}
       </span>
     </div>
