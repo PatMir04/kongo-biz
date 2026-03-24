@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Entreprises - KongoBiz{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card mb-3">
+      <div class="card-header"><h5>Filtrer</h5></div>
+      <div class="card-body">
+        <form method="get" action="{% url 'businesses:list' %}">
+          <div class="mb-3">
+            <label class="form-label">Recherche</label>
+            <input type="text" name="q" class="form-control" value="{{ query }}" placeholder="Nom, description...">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Ville</label>
+            <select name="ville" class="form-select">
+              <option value="">Toutes les villes</option>
+              <option value="Kinshasa" {% if city == 'Kinshasa' %}selected{% endif %}>Kinshasa</option>
+              <option value="Lubumbashi" {% if city == 'Lubumbashi' %}selected{% endif %}>Lubumbashi</option>
+              <option value="Goma" {% if city == 'Goma' %}selected{% endif %}>Goma</option>
+              <option value="Bukavu" {% if city == 'Bukavu' %}selected{% endif %}>Bukavu</option>
+              <option value="Mbuji-Mayi" {% if city == 'Mbuji-Mayi' %}selected{% endif %}>Mbuji-Mayi</option>
+              <option value="Kisangani" {% if city == 'Kisangani' %}selected{% endif %}>Kisangani</option>
+              <option value="Kananga" {% if city == 'Kananga' %}selected{% endif %}>Kananga</option>
+              <option value="Kolwezi" {% if city == 'Kolwezi' %}selected{% endif %}>Kolwezi</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Categorie</label>
+            <select name="categorie" class="form-select">
+              <option value="">Toutes</option>
+              {% for cat in categories %}
+              <option value="{{ cat.slug }}" {% if category_slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Filtrer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h2>Entreprises</h2>
+    <div class="row">
+      {% for business in businesses %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          {% if business.image %}
+          <img src="{{ business.image.url }}" class="card-img-top" alt="{{ business.name }}" style="height:200px;object-fit:cover;">
+          {% else %}
+          <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height:200px;">
+            <i class="bi bi-shop text-white" style="font-size:3rem;"></i>
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ business.name }}</h5>
+            <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ business.city }}{% if business.commune %}, {{ business.commune }}{% endif %}</p>
+            <p class="card-text">{{ business.description|truncatewords:20 }}</p>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'businesses:detail' business.slug %}" class="btn btn-outline-success btn-sm">Voir details</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info">Aucune entreprise trouvee.</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if businesses.has_other_pages %}
+    <nav>
+      <ul class="pagination justify-content-center">
+        {% if businesses.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ businesses.previous_page_number }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">Precedent</a></li>
+        {% endif %}
+        {% for num in businesses.paginator.page_range %}
+        <li class="page-item {% if businesses.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">{{ num }}</a></li>
+        {% endfor %}
+        {% if businesses.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ businesses.next_page_number }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">Suivant</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
