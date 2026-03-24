@@ -14,17 +14,12 @@
             <input type="text" name="q" class="form-control" value="{{ query }}" placeholder="Nom, description...">
           </div>
           <div class="mb-3">
-            <label class="form-label">Ville</label>
-            <select name="ville" class="form-select">
-              <option value="">Toutes les villes</option>
-              <option value="Kinshasa" {% if city == 'Kinshasa' %}selected{% endif %}>Kinshasa</option>
-              <option value="Lubumbashi" {% if city == 'Lubumbashi' %}selected{% endif %}>Lubumbashi</option>
-              <option value="Goma" {% if city == 'Goma' %}selected{% endif %}>Goma</option>
-              <option value="Bukavu" {% if city == 'Bukavu' %}selected{% endif %}>Bukavu</option>
-              <option value="Mbuji-Mayi" {% if city == 'Mbuji-Mayi' %}selected{% endif %}>Mbuji-Mayi</option>
-              <option value="Kisangani" {% if city == 'Kisangani' %}selected{% endif %}>Kisangani</option>
-              <option value="Kananga" {% if city == 'Kananga' %}selected{% endif %}>Kananga</option>
-              <option value="Kolwezi" {% if city == 'Kolwezi' %}selected{% endif %}>Kolwezi</option>
+            <label class="form-label">Province</label>
+            <select name="province" class="form-select">
+              <option value="">Toutes les provinces</option>
+              {% for prov in provinces %}
+              <option value="{{ prov.id }}" {% if province_id == prov.id|stringformat:"d" %}selected{% endif %}>{{ prov.name }}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="mb-3">
@@ -56,7 +51,7 @@
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ business.name }}</h5>
-            <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ business.city }}{% if business.commune %}, {{ business.commune }}{% endif %}</p>
+            <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ business.location_display }}</p>
             <p class="card-text">{{ business.description|truncatewords:20 }}</p>
           </div>
           <div class="card-footer">
@@ -74,13 +69,13 @@
     <nav>
       <ul class="pagination justify-content-center">
         {% if businesses.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page={{ businesses.previous_page_number }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">Precedent</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ businesses.previous_page_number }}&q={{ query }}&province={{ province_id }}&categorie={{ category_slug }}">Precedent</a></li>
         {% endif %}
         {% for num in businesses.paginator.page_range %}
-        <li class="page-item {% if businesses.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">{{ num }}</a></li>
+        <li class="page-item {% if businesses.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&q={{ query }}&province={{ province_id }}&categorie={{ category_slug }}">{{ num }}</a></li>
         {% endfor %}
         {% if businesses.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ businesses.next_page_number }}&q={{ query }}&ville={{ city }}&categorie={{ category_slug }}">Suivant</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ businesses.next_page_number }}&q={{ query }}&province={{ province_id }}&categorie={{ category_slug }}">Suivant</a></li>
         {% endif %}
       </ul>
     </nav>
