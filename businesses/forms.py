@@ -6,18 +6,15 @@ class BusinessForm(forms.ModelForm):
     class Meta:
         model = Business
         fields = [
-            'name', 'category', 'description', 'address', 'province', 'city',
-            'phone', 'whatsapp', 'email', 'website',
-            'image', 'opening_hours', 'latitude', 'longitude',
+            'name', 'category', 'description', 'province', 'city',
+            'address', 'phone', 'email', 'website',
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
-            'opening_hours': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Lun-Ven: 8h-18h\nSam: 9h-14h'}),
             'name': forms.TextInput(attrs={'placeholder': 'Nom de votre entreprise'}),
             'address': forms.TextInput(attrs={'placeholder': 'Adresse complete'}),
             'city': forms.TextInput(attrs={'placeholder': 'Ville ou commune'}),
             'phone': forms.TextInput(attrs={'placeholder': '+243 XXX XXX XXX'}),
-            'whatsapp': forms.TextInput(attrs={'placeholder': '+243 XXX XXX XXX'}),
         }
 
 
