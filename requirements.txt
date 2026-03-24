@@ -1,0 +1,10 @@
+Django>=5.0,<6.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=2024.2
+Pillow>=10.0
+django-allauth>=0.61
+gunicorn>=21.2
+whitenoise>=6.5
+django-debug-toolbar>=4.2
+python-decouple>=3.8
+dj-database-url>=2.1
