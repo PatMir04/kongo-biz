@@ -9,7 +9,6 @@
   <p class="lead">Trouvez et evaluez les meilleures entreprises en RD Congo</p>
   <form class="d-flex justify-content-center mt-3" action="{% url 'businesses:search' %}" method="get">
     <input class="form-control w-50 me-2" type="search" name="q" placeholder="Que cherchez-vous?">
-    <input class="form-control w-25 me-2" type="text" name="location" placeholder="Ville ou quartier">
     <button class="btn btn-light" type="submit">Rechercher</button>
   </form>
 </section>
@@ -43,7 +42,7 @@
         {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{ business.name }}</h5>
-          <p class="text-muted small"><i class="bi bi-geo-alt"></i> {{ business.city }} - {{ business.commune }}</p>
+          <p class="text-muted small"><i class="bi bi-geo-alt"></i> {{ business.location_display }}</p>
           <span class="badge bg-success">{{ business.category.name }}</span>
         </div>
         <div class="card-footer">
@@ -67,11 +66,11 @@
           <h6>{{ review.business.name }}</h6>
           <div class="text-warning mb-2">
             {% for i in "12345" %}
-              {% if forloop.counter <= review.rating %}
-                <i class="bi bi-star-fill"></i>
-              {% else %}
-                <i class="bi bi-star"></i>
-              {% endif %}
+            {% if forloop.counter <= review.rating %}
+            <i class="bi bi-star-fill"></i>
+            {% else %}
+            <i class="bi bi-star"></i>
+            {% endif %}
             {% endfor %}
           </div>
           <p class="card-text small">{{ review.comment|truncatewords:30 }}</p>
