@@ -97,16 +97,33 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/comptes/connexion/'
 
-# DRC Cities
-DRC_CITIES = [
-    ('kinshasa', 'Kinshasa'),
-    ('lubumbashi', 'Lubumbashi'),
-    ('goma', 'Goma'),
-    ('bukavu', 'Bukavu'),
-    ('mbuji-mayi', 'Mbuji-Mayi'),
-    ('kisangani', 'Kisangani'),
-    ('kananga', 'Kananga'),
-    ('kolwezi', 'Kolwezi'),
-    ('likasi', 'Likasi'),
-    ('matadi', 'Matadi'),
+
+# DRC Provinces with number of cities
+DRC_PROVINCES = [
+    ('bas-uele', 'Bas-Uele', 7),
+    ('equateur', 'Equateur', 6),
+    ('haut-katanga', 'Haut-Katanga', 15),
+    ('haut-lomami', 'Haut-Lomami', 5),
+    ('haut-uele', 'Haut-Uele', 9),
+    ('ituri', 'Ituri', 5),
+    ('kasai', 'Kasai', 5),
+    ('kasai-central', 'Kasai Central', 5),
+    ('kasai-oriental', 'Kasai Oriental', 4),
+    ('kinshasa', 'Kinshasa', 24),
+    ('kongo-central', 'Kongo Central', 10),
+    ('kwango', 'Kwango', 5),
+    ('kwilu', 'Kwilu', 8),
+    ('lomami', 'Lomami', 5),
+    ('lualaba', 'Lualaba', 5),
+    ('mai-ndombe', 'Mai-Ndombe', 5),
+    ('maniema', 'Maniema', 7),
+    ('mongala', 'Mongala', 5),
+    ('nord-kivu', 'Nord-Kivu', 6),
+    ('nord-ubangi', 'Nord-Ubangi', 4),
+    ('sankuru', 'Sankuru', 5),
+    ('sud-kivu', 'Sud-Kivu', 8),
+    ('sud-ubangi', 'Sud-Ubangi', 5),
+    ('tanganyika', 'Tanganyika', 6),
+    ('tshopo', 'Tshopo', 7),
+    ('tshuapa', 'Tshuapa', 6),
 ]
