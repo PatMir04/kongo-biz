@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - KongoBiz{% endblock %}
+
+{% block content %}
+<h2><i class="bi {{ category.icon }}"></i> {{ category.name }}</h2>
+{% if category.description %}
+<p class="text-muted">{{ category.description }}</p>
+{% endif %}
+<hr>
+<div class="row">
+  {% for business in businesses %}
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      {% if business.image %}
+      <img src="{{ business.image.url }}" class="card-img-top" alt="{{ business.name }}" style="height:200px;object-fit:cover;">
+      {% else %}
+      <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height:200px;">
+        <i class="bi {{ category.icon }} text-white" style="font-size:3rem;"></i>
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ business.name }}</h5>
+        <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ business.city }}</p>
+        <p class="card-text">{{ business.description|truncatewords:20 }}</p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'businesses:detail' business.slug %}" class="btn btn-outline-success btn-sm">Voir details</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-info">Aucune entreprise dans cette categorie.</div>
+  </div>
+  {% endfor %}
+</div>
+{% if businesses.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if businesses.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ businesses.previous_page_number }}">Precedent</a></li>
+    {% endif %}
+    {% for num in businesses.paginator.page_range %}
+    <li class="page-item {% if businesses.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+    {% endfor %}
+    {% if businesses.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ businesses.next_page_number }}">Suivant</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
