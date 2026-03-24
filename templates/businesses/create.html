@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter une Entreprise - KongoBiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <h1>Ajouter une Entreprise</h1>
+    <hr>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger">{{ field.errors }}</div>{% endif %}
+        {% if field.help_text %}<small class="text-muted">{{ field.help_text }}</small>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-success">Ajouter l'entreprise</button>
+      <a href="{% url 'businesses:list' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
