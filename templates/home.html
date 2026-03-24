@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}KongoBiz - Trouvez les meilleures entreprises en RD Congo{% endblock %}
+
+{% block content %}
+<section class="hero bg-success text-white text-center py-5 rounded mb-4">
+  <h1 class="display-4 fw-bold">Bienvenue sur KongoBiz</h1>
+  <p class="lead">Trouvez et evaluez les meilleures entreprises en RD Congo</p>
+  <form class="d-flex justify-content-center mt-3" action="{% url 'businesses:search' %}" method="get">
+    <input class="form-control w-50 me-2" type="search" name="q" placeholder="Que cherchez-vous?">
+    <input class="form-control w-25 me-2" type="text" name="location" placeholder="Ville ou quartier">
+    <button class="btn btn-light" type="submit">Rechercher</button>
+  </form>
+</section>
+
+<section class="mb-5">
+  <h2 class="mb-3">Categories</h2>
+  <div class="row">
+    {% for category in categories %}
+    <div class="col-6 col-md-3 col-lg-2 mb-3">
+      <a href="{% url 'businesses:category_detail' category.slug %}" class="text-decoration-none">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi {{ category.icon }} fs-2 text-success"></i>
+            <p class="card-text mt-2">{{ category.name }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mb-5">
+  <h2 class="mb-3">Entreprises recentes</h2>
+  <div class="row">
+    {% for business in recent_businesses %}
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="card h-100">
+        {% if business.image %}
+        <img src="{{ business.image.url }}" class="card-img-top" alt="{{ business.name }}" style="height:180px;object-fit:cover">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ business.name }}</h5>
+          <p class="text-muted small"><i class="bi bi-geo-alt"></i> {{ business.city }} - {{ business.commune }}</p>
+          <span class="badge bg-success">{{ business.category.name }}</span>
+        </div>
+        <div class="card-footer">
+          <a href="{{ business.get_absolute_url }}" class="btn btn-outline-success btn-sm">Voir details</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Aucune entreprise pour le moment.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mb-5">
+  <h2 class="mb-3">Avis recents</h2>
+  <div class="row">
+    {% for review in recent_reviews %}
+    <div class="col-md-6 col-lg-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6>{{ review.business.name }}</h6>
+          <div class="text-warning mb-2">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p class="card-text small">{{ review.comment|truncatewords:30 }}</p>
+          <p class="text-muted small">- {{ review.user.username }}</p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Aucun avis pour le moment.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
