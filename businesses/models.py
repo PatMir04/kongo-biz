@@ -45,26 +45,38 @@ class Category(models.Model):
         return reverse('businesses:category_detail', kwargs={'slug': self.slug})
 
 
-class Business(models.Model):
-    CITY_CHOICES = settings.DRC_CITIES
+class Province(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+    city_count = models.PositiveIntegerField(default=0, help_text='Number of cities in this province')
 
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Province'
+        verbose_name_plural = 'Provinces'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Business(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='businesses')
-    name = models.CharField(max_length=200, verbose_name='Nom')
+    name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='businesses', verbose_name='Categorie')
-    description = models.TextField(verbose_name='Description', blank=True)
-    address = models.CharField(max_length=300, verbose_name='Adresse')
-    city = models.CharField(max_length=50, choices=CITY_CHOICES, verbose_name='Ville')
-    commune = models.CharField(max_length=100, blank=True, verbose_name='Commune')
-    phone = models.CharField(max_length=20, blank=True, verbose_name='Telephone')
-    whatsapp = models.CharField(max_length=20, blank=True, verbose_name='WhatsApp')
-    email = models.EmailField(blank=True, verbose_name='Email')
-    website = models.URLField(blank=True, verbose_name='Site web')
-    image = models.ImageField(upload_to='businesses/', blank=True, null=True, verbose_name='Photo principale')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    opening_hours = models.TextField(blank=True, verbose_name="Heures d'ouverture")
-    is_verified = models.BooleanField(default=False, verbose_name='Verifie')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='businesses')
+    description = models.TextField()
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True, related_name='businesses')
+    city = models.CharField(max_length=100, blank=True, help_text='City or town within the province')
+    address = models.CharField(max_length=300, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    website = models.URLField(blank=True)
+    is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -79,22 +91,22 @@ class Business(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-            # Ensure uniqueness
+            # Ensure unique slug
             original_slug = self.slug
             counter = 1
-            while Business.objects.filter(slug=self.slug).exists():
+            while Business.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
                 self.slug = f'{original_slug}-{counter}'
                 counter += 1
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('businesses:detail', kwargs={'slug': self.slug})
+        return reverse('businesses:business_detail', kwargs={'slug': self.slug})
 
     @property
     def average_rating(self):
         reviews = self.reviews.all()
         if reviews:
-            return round(sum(r.rating for r in reviews) / len(reviews), 1)
+            return sum(r.rating for r in reviews) / len(reviews)
         return 0
 
     @property
@@ -102,8 +114,13 @@ class Business(models.Model):
         return self.reviews.count()
 
     @property
-    def city_display(self):
-        return dict(self.CITY_CHOICES).get(self.city, self.city)
+    def location_display(self):
+        parts = []
+        if self.city:
+            parts.append(self.city)
+        if self.province:
+            parts.append(self.province.name)
+        return ', '.join(parts) if parts else ''
 
     @property
     def photo_count(self):
@@ -116,7 +133,7 @@ class Business(models.Model):
             sub = self.owner.subscription
             max_photos = sub.plan.max_photos_per_business
         except (UserSubscription.DoesNotExist, AttributeError):
-            max_photos = 3  # Free tier default
+            max_photos = 3
         return self.photo_count < max_photos
 
     def max_photos_allowed(self):
@@ -131,7 +148,7 @@ class Business(models.Model):
 class BusinessPhoto(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='businesses/photos/')
-    caption = models.CharField(max_length=200, blank=True, verbose_name='Legende')
+    caption = models.CharField(max_length=200, blank=True, verbose_name='legende')
     is_primary = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
@@ -141,4 +158,4 @@ class BusinessPhoto(models.Model):
         verbose_name_plural = 'Photos'
 
     def __str__(self):
-        return f'Photo de {self.business.name}'
+        return f"Photo de {self.business.name}"
