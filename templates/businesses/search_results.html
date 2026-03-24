@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Recherche - KongoBiz{% endblock %}
+
+{% block content %}
+<h2>Resultats de recherche</h2>
+{% if query or location %}
+<p class="text-muted">Recherche{% if query %} pour "{{ query }}"{% endif %}{% if location %} a "{{ location }}"{% endif %}</p>
+{% endif %}
+<hr>
+<div class="row">
+  {% for business in results %}
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      {% if business.image %}
+      <img src="{{ business.image.url }}" class="card-img-top" alt="{{ business.name }}" style="height:200px;object-fit:cover;">
+      {% else %}
+      <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height:200px;">
+        <i class="bi bi-shop text-white" style="font-size:3rem;"></i>
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ business.name }}</h5>
+        <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ business.city }}</p>
+        <p class="card-text">{{ business.description|truncatewords:20 }}</p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'businesses:detail' business.slug %}" class="btn btn-outline-success btn-sm">Voir details</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-info">Aucun resultat trouve. Essayez une autre recherche.</div>
+  </div>
+  {% endfor %}
+</div>
+{% if results.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if results.has_previous %}
+    <li class="page-item"><a class="page-link" href="?q={{ query }}&location={{ location }}&page={{ results.previous_page_number }}">Precedent</a></li>
+    {% endif %}
+    {% for num in results.paginator.page_range %}
+    <li class="page-item {% if results.number == num %}active{% endif %}"><a class="page-link" href="?q={{ query }}&location={{ location }}&page={{ num }}">{{ num }}</a></li>
+    {% endfor %}
+    {% if results.has_next %}
+    <li class="page-item"><a class="page-link" href="?q={{ query }}&location={{ location }}&page={{ results.next_page_number }}">Suivant</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
