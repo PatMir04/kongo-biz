@@ -7,4 +7,5 @@ urlpatterns = [
     path('ajouter/<slug:slug>/', views.add_review, name='add'),
     path('modifier/<int:pk>/', views.edit_review, name='edit'),
     path('supprimer/<int:pk>/', views.delete_review, name='delete'),
+        path('signaler/<int:pk>/', views.flag_review, name='flag'),
 ]
