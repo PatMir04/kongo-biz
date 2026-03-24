@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil de {{ profile_user.username }} - KongoBiz{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body text-center">
+        {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" class="rounded-circle mb-3" width="150" height="150" style="object-fit:cover">
+        {% else %}
+        <i class="bi bi-person-circle" style="font-size:100px"></i>
+        {% endif %}
+        <h4>{{ profile_user.get_full_name|default:profile_user.username }}</h4>
+        <p class="text-muted">{{ profile.city }}</p>
+        {% if profile.bio %}<p>{{ profile.bio }}</p>{% endif %}
+        {% if user == profile_user %}
+        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-success">Modifier le profil</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <h4>Avis ({{ reviews.count }})</h4>
+    {% for review in reviews %}
+    <div class="card mb-2">
+      <div class="card-body">
+        <h6><a href="{{ review.business.get_absolute_url }}">{{ review.business.name }}</a></h6>
+        <div class="text-warning">{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}{% endfor %}</div>
+        <p class="mt-2">{{ review.comment|truncatewords:50 }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Aucun avis.</p>
+    {% endfor %}
+
+    {% if businesses %}
+    <h4 class="mt-4">Entreprises</h4>
+    {% for biz in businesses %}
+    <div class="card mb-2">
+      <div class="card-body">
+        <h6><a href="{{ biz.get_absolute_url }}">{{ biz.name }}</a></h6>
+        <span class="badge bg-success">{{ biz.category.name }}</span>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
