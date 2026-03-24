@@ -1,5 +1,8 @@
-from .models import Category
+from .models import Category, Province
 
 
 def categories_processor(request):
-    return {'nav_categories': Category.objects.all()}
+    return {
+        'nav_categories': Category.objects.all(),
+        'nav_provinces': Province.objects.all(),
+    }
