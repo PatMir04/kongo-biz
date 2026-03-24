@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ business.name }} - KongoBiz{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    {% if business.image %}
+    <img src="{{ business.image.url }}" class="img-fluid rounded mb-3" alt="{{ business.name }}" style="max-height:400px;width:100%;object-fit:cover;">
+    {% endif %}
+    <h1>{{ business.name }}</h1>
+    {% if business.is_verified %}
+    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Verifie</span>
+    {% endif %}
+    <p class="text-muted"><i class="bi bi-tag"></i> {{ business.category }}</p>
+    <hr>
+    <h4>Description</h4>
+    <p>{{ business.description|linebreaks }}</p>
+    {% if business.opening_hours %}
+    <h4>Heures d'ouverture</h4>
+    <p>{{ business.opening_hours|linebreaks }}</p>
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header"><h5>Informations</h5></div>
+      <div class="card-body">
+        <p><i class="bi bi-geo-alt"></i> {{ business.address }}</p>
+        <p><i class="bi bi-building"></i> {{ business.city }}{% if business.commune %}, {{ business.commune }}{% endif %}</p>
+        {% if business.phone %}
+        <p><i class="bi bi-telephone"></i> {{ business.phone }}</p>
+        {% endif %}
+        {% if business.whatsapp %}
+        <p><i class="bi bi-whatsapp"></i> {{ business.whatsapp }}</p>
+        {% endif %}
+        {% if business.email %}
+        <p><i class="bi bi-envelope"></i> {{ business.email }}</p>
+        {% endif %}
+        {% if business.website %}
+        <p><i class="bi bi-globe"></i> <a href="{{ business.website }}" target="_blank">Site web</a></p>
+        {% endif %}
+      </div>
+    </div>
+    {% if user == business.owner %}
+    <a href="{% url 'businesses:edit' business.slug %}" class="btn btn-warning w-100 mt-3">Modifier</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <a href="{% url 'reviews:add' business.slug %}" class="btn btn-success w-100 mt-2">Laisser un avis</a>
+    {% endif %}
+  </div>
+</div>
+
+<hr>
+<h3>Avis ({{ reviews.count }})</h3>
+{% for review in reviews %}
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <strong>{{ review.user.username }}</strong>
+      <span>
+        {% for i in "12345" %}
+          {% if forloop.counter <= review.rating %}
+            <i class="bi bi-star-fill text-warning"></i>
+          {% else %}
+            <i class="bi bi-star text-warning"></i>
+          {% endif %}
+        {% endfor %}
+      </span>
+    </div>
+    <p class="mt-2">{{ review.comment }}</p>
+    <small class="text-muted">{{ review.created_at|date:"d/m/Y" }}</small>
+    {% if user == review.user %}
+    <div class="mt-2">
+      <a href="{% url 'reviews:edit' review.pk %}" class="btn btn-sm btn-outline-primary">Modifier</a>
+      <a href="{% url 'reviews:delete' review.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<div class="alert alert-info">Aucun avis pour le moment. Soyez le premier!</div>
+{% endfor %}
+{% endblock %}
