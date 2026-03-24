@@ -1,0 +1,100 @@
+/* KongoBiz Custom Styles */
+
+/* General */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Cards */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Star ratings */
+.bi-star-fill {
+  color: #ffc107;
+}
+
+.bi-star {
+  color: #ffc107;
+}
+
+/* Search bar */
+.navbar .form-control {
+  border-radius: 20px 0 0 20px;
+}
+
+.navbar .btn {
+  border-radius: 0 20px 20px 0;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+}
+
+/* Category icons */
+.category-card {
+  text-align: center;
+  padding: 1.5rem;
+  cursor: pointer;
+}
+
+.category-card i {
+  font-size: 2.5rem;
+  color: #198754;
+}
+
+.category-card:hover i {
+  color: #146c43;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 150px !important;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Form styling */
+.form-control:focus,
+.form-select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+/* Badge verified */
+.badge.bg-success {
+  font-size: 0.8rem;
+}
+
+/* Pagination */
+.page-link {
+  color: #198754;
+}
+
+.page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+}
