@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from businesses.models import Business
-from .models import Review
-from .forms import ReviewForm
+from .models import Review, ReviewFlag
+from .forms import ReviewForm, ReviewFlagForm
 
 
 @login_required
@@ -52,7 +52,6 @@ def edit_review(request, pk):
     context = {
         'form': form,
         'review': review,
-        'business': review.business,
     }
     return render(request, 'reviews/edit_review.html', context)
 
@@ -60,13 +59,28 @@ def edit_review(request, pk):
 @login_required
 def delete_review(request, pk):
     review = get_object_or_404(Review, pk=pk, user=request.user)
-    business_slug = review.business.slug
-
+    slug = review.business.slug
     if request.method == 'POST':
         review.delete()
         messages.success(request, 'Votre avis a ete supprime.')
-        return redirect('businesses:detail', slug=business_slug)
+    return redirect('businesses:detail', slug=slug)
 
-    return render(request, 'reviews/delete_review.html', {
-        'review': review
-    })
+
+@login_required
+def flag_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    if ReviewFlag.objects.filter(review=review, flagged_by=request.user).exists():
+        messages.warning(request, 'Vous avez deja signale cet avis.')
+        return redirect('businesses:detail', slug=review.business.slug)
+    if request.method == 'POST':
+        form = ReviewFlagForm(request.POST)
+        if form.is_valid():
+            flag = form.save(commit=False)
+            flag.review = review
+            flag.flagged_by = request.user
+            flag.save()
+            messages.success(request, 'Merci pour votre signalement. Nous allons examiner cet avis.')
+            return redirect('businesses:detail', slug=review.business.slug)
+    else:
+        form = ReviewFlagForm()
+    return render(request, 'reviews/flag_review.html', {'form': form, 'review': review})
